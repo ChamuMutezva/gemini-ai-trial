@@ -1,0 +1,185 @@
+import Prism from "prismjs";
+import "prismjs/themes/prism.css";
+// Add language components
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-bash";
+import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/plugins/line-numbers/prism-line-numbers";
+import "prismjs/plugins/line-numbers/prism-line-numbers.css";
+import "./style.css";
+import { generateResponse } from "./index.ts";
+
+// Get DOM elements index.html main element
+const app = document.querySelector<HTMLElement>("main#app")!;
+
+// theme toggle
+const createThemeToggle = () => {
+    const toggle = document.createElement("button");
+    toggle.id = "theme-toggle";
+    toggle.className = "theme-toggle";
+    toggle.innerHTML = `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8V16Z" fill="currentColor"/>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12 4V20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4Z" fill="currentColor"/>
+    </svg>
+    <span class="sr-only">Toggle theme to either light or dark mode</span>
+  `;
+
+    // Check for saved preference or use system preference
+    const savedTheme = localStorage.getItem("theme");
+    const systemPrefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+    ).matches;
+    const currentTheme = savedTheme ?? (systemPrefersDark ? "dark" : "light");
+
+    document.documentElement.setAttribute("data-theme", currentTheme);
+
+    toggle.addEventListener("click", () => {
+        const newTheme =
+            document.documentElement.getAttribute("data-theme") === "dark"
+                ? "light"
+                : "dark";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+    });
+
+    return toggle;
+};
+
+// Add this before your form creation
+app.prepend(createThemeToggle());
+
+const form = document.createElement("form");
+form.setAttribute("aria-live", "polite");
+
+const input = document.createElement("input");
+const submitButton = document.createElement("button");
+
+const label = document.createElement("label");
+label.htmlFor = "prompt-input";
+label.textContent = "Ask your question";
+label.className = "sr-only"; // Screen reader only
+
+// Set up the form
+form.id = "prompt-form";
+form.className = "prompt-form";
+input.type = "text";
+input.id = "prompt-input";
+input.className = "prompt-input";
+input.setAttribute("aria-required", "true");
+input.setAttribute("aria-describedby", "input-help");
+input.placeholder = "Ask a question...";
+input.required = true;
+submitButton.textContent = "Submit";
+submitButton.className = "prompt-submit";
+
+// Append elements to the form and app
+form.appendChild(input);
+form.appendChild(submitButton);
+app.appendChild(form);
+
+const responseContainer = document.createElement("div");
+responseContainer.id = "response-container";
+const loadingIndicator = document.createElement("div");
+loadingIndicator.id = "loading-indicator";
+loadingIndicator.className = "loading-hidden";
+app.append(responseContainer, loadingIndicator);
+
+// Handle form submission
+document
+    .getElementById("prompt-form")
+    ?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        submitButton.disabled = true;
+        form.setAttribute("aria-busy", "true");
+        const inputElement = document.getElementById(
+            "prompt-input"
+        ) as HTMLInputElement;
+        const prompt = inputElement.value.trim();
+        const loadingIndicator = document.getElementById("loading-indicator")!;
+        loadingIndicator.id = "loading-indicator";
+        loadingIndicator.setAttribute("role", "status");
+        loadingIndicator.setAttribute("aria-live", "polite");
+        // loadingIndicator.textContent = "Loading response..."; // Visible or SR-only
+
+        const responseContainer =
+            document.getElementById("response-container")!;
+
+        if (!prompt) return;
+
+        try {
+            // Show loading state
+            loadingIndicator.classList.remove("loading-hidden");
+            loadingIndicator.classList.add("loading-visible");
+            responseContainer.innerHTML = "";
+
+            const response = await generateResponse(prompt);
+            // Hide loading state
+            loadingIndicator.classList.remove("loading-visible");
+            loadingIndicator.classList.add("loading-hidden");
+
+            // Show response
+            responseContainer.innerHTML = `
+            <div class="response">
+                <h2 class="response-heading">AI Response:</h2>
+                <h3 class="response-sub-heading">${prompt}</h3>
+                  ${formatResponse(response)}
+            </div>
+        `;
+
+            requestAnimationFrame(() => {
+                Prism.highlightAllUnder(responseContainer);
+            });
+        } catch (error) {
+            // Hide loading state on error too
+            loadingIndicator.classList.remove("loading-visible");
+            loadingIndicator.classList.add("loading-hidden");
+
+            console.error("Error generating response:", error);
+            const errorMessage =
+                error instanceof Error ? error.message : "Request failed";
+
+            responseContainer.innerHTML = `
+           <div class="error" role="alert" aria-live="assertive">
+             Error: ${errorMessage}
+          </div>
+           `;
+        } finally {
+            submitButton.disabled = false;
+            form.removeAttribute("aria-busy");
+        }
+
+        // Clear input after submission
+        inputElement.value = "";
+    });
+
+// Update formatResponse function
+function formatResponse(text: string): string {
+    return (
+        text
+            // Process code blocks
+            .replace(/```(\w+)?\n([\s\S]*?)\n```/g, (_, lang, code) => {
+                const language = lang || "text";
+                return `<pre class="language-${language} line-numbers"><code>${escapeHtml(
+                    code
+                )}</code></pre>`;
+            })
+            // Process inline code
+            .replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
+            // Preserve paragraphs
+            .replace(/\n\n+/g, "</p><p>")
+            .replace(/\n/g, "<br>")
+    );
+}
+
+function escapeHtml(unsafe: string): string {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+

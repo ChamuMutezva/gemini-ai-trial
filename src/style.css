@@ -1,0 +1,388 @@
+/* =================== */
+/* CSS Reset + Base Styles */
+/* =================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    /* Theme-aware scrollbar (works in modern browsers) */
+    scrollbar-color: var(--color-border) var(--color-bg);
+    scrollbar-width: thin;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {   
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    display: flex;
+    place-items: center;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+/* Theme-aware form elements */
+input,
+button,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+    background-color: inherit;
+    border: 1px solid var(--color-border);
+}
+
+/* Remove default button styles */
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--color-secondary);
+    cursor: pointer;
+    transition: border-color 0.25s;
+}
+
+/* Remove list styles */
+ol,
+ul {
+    list-style: none;
+}
+
+a {
+    font-weight: 500;
+    color: #646cff;
+    text-decoration: inherit;
+}
+
+/* Image defaults */
+img,
+picture,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Prevent text overflow */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    overflow-wrap: break-word;
+}
+
+/* Theme-aware scrollbars (WebKit) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+/* Remove animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+/* =================== */
+
+html[data-theme] {
+    color-scheme: var(--color-scheme);
+}
+
+:root {
+    font-family: "Inter",
+        /* Modern, clean font (similar to what DeepSeek likely uses) */ -apple-system,
+        /* San Francisco on macOS */ BlinkMacSystemFont,
+        /* Chrome/MacOS */ "Segoe UI", /* Windows */ Roboto,
+        /* Android/Google */ Oxygen, /* Linux KDE */ Ubuntu,
+        /* Linux */ Cantarell, /* Linux GNOME */ "Helvetica Neue",
+        /* Legacy */ sans-serif;
+    --color-scheme: light;
+    --color-text: #213547;
+    --color-bg: #ffffff;
+    --color-primary: #646cff;
+    --color-secondary: #f9f9f9;
+    --color-border: #e0e0e0;
+    --color-error: #ff3e3e;
+    --code-bg: #f8f8f8;
+    --code-text: #c7254e;
+    --code-comment: #6a737d;
+    --inline-code-bg: rgba(175, 184, 193, 0.2);
+    --inline-code-text: #e01e5a;
+}
+
+[data-theme="dark"] {
+    --color-scheme: dark;
+    --color-text: rgba(255, 255, 255, 0.87);
+    --color-bg: #242424;
+    --color-primary: #747bff;
+    --color-secondary: #1a1a1a;
+    --color-border: #333;
+    --color-error: #ff6b6b;
+    --code-bg: #2d2d2d;
+    --code-text: #f8f8f2;
+    --inline-code-bg: rgba(110, 118, 129, 0.4);
+    --inline-code-text: #ff7b72;
+    --code-comment: #8b949e;
+}
+
+.inline-code {
+    background: var(--inline-code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--inline-code-text);
+}
+pre[class*="language-"] {
+    background: var(--code-bg) !important;
+    border-radius: 8px;
+    margin: 1rem 0;
+    overflow: auto;
+    position: relative;
+    padding: 1.5em 1em 1em;
+}
+.code-copy {
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.25em 0.5em;
+    font-size: 0.75em;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.line-numbers .line-numbers-rows {
+    border-right: 1px solid var(--color-border);
+    padding-right: 1em;
+}
+
+pre:hover .code-copy {
+    opacity: 1;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: var(--code-comment);
+}
+
+code[class*="language-"] {
+    font-family: "Fira Code", "Consolas", monospace !important;
+    font-size: 0.9em;
+    text-shadow: none !important;
+}
+.token {
+    background: transparent !important;
+}
+
+.response {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif; /* Modern font stack */
+    line-height: 1.6;
+    max-width: 100ch; /* Optimal line length (65 characters) */
+    margin: 1.5rem auto;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 20px;
+    background: var(--color-secondary);
+    color: var(--color-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.response pre {
+    background: var(--code-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid var(--color-border);
+}
+
+.response code {
+    font-family: "Roboto Mono", monospace;
+    font-size: 0.9em;
+    color: var(--code-text);
+}
+
+.response pre code {
+    display: block;
+    white-space: pre;
+}
+
+#prompt-form input {
+    background: var(--color-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    flex: 1;
+    padding: 8px;
+    font-size: 1rem;
+}
+
+a:hover {
+    color: #535bf2;
+}
+
+h1 {
+    font-size: 3.2em;
+    line-height: 1.1;
+}
+
+#app {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+button:hover {
+    border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+}
+
+.prompt-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.prompt-submit {
+    padding: 8px 16px;
+    background: #646cff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.response-heading {
+    font-size: 1.25rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+}
+
+.response-text {
+    font-size: 1rem;
+    word-wrap: break-word;
+    white-space: pre-wrap; /* Preserves formatting but wraps */
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+/* Add to your style.css */
+.theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--color-text);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.theme-toggle:hover {
+    opacity: 1;
+}
+
+.theme-toggle svg {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.loading-hidden {
+    display: none;
+}
+.loading-visible {
+    display: block;
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #646cff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+body,
+button,
+input,
+.response {
+    transition: background-color 0.3s ease, color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+/* Accessibility-focused styles */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+[aria-busy="true"]::after {
+    content: " (Loading)";
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
