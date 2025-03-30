@@ -12,7 +12,33 @@ import "./style.css";
 import { generateResponse } from "./index.ts";
 
 // Get DOM elements index.html main element
-const app = document.querySelector<HTMLElement>("main#app")!;
+const app = document.querySelector<HTMLDivElement>("#app")!;
+
+// Create header element
+const header = document.createElement("header");
+header.innerHTML = `
+  <h1>AI Assistant</h1>
+  <p class="subtitle">Powered by Gemini AI - Ask me anything!</p>
+`;
+
+// Create main element
+const main = document.createElement("main");
+main.id = "main-content";
+main.className = "main-content";
+
+// Create a footer element
+const disclaimer = document.createElement("footer");
+disclaimer.className = "disclaimer";
+disclaimer.innerHTML = `
+    <p>
+        <small>Note: This AI assistant may occasionally generate incorrect information. Verify important facts.</small>
+    </p>
+    <p>
+        <small>© 2025. All rights reserved. Visit us at
+             <a href="http://preprince.co.za" target="_blank" rel="noopener noreferrer">preprince.co.za</a>.    
+         </small>
+    </p>
+`;
 
 // theme toggle
 const createThemeToggle = () => {
@@ -48,8 +74,10 @@ const createThemeToggle = () => {
     return toggle;
 };
 
+app.appendChild(main);
+
 // Add this before your form creation
-app.prepend(createThemeToggle());
+main.prepend(createThemeToggle());
 
 const form = document.createElement("form");
 form.setAttribute("aria-live", "polite");
@@ -76,26 +104,22 @@ submitButton.textContent = "Submit";
 submitButton.className = "prompt-submit";
 
 // Add this right after app.prepend(createThemeToggle())
-const header = document.createElement("header");
-header.innerHTML = `
-  <h1>AI Assistant</h1>
-  <p class="subtitle">Powered by Gemini AI - Ask me anything!</p>
-`;
+
 app.prepend(header);
 
 // Append elements to the form and app
 form.appendChild(label);
 form.appendChild(input);
 form.appendChild(submitButton);
-app.appendChild(form);
+main.appendChild(form);
 
 const responseContainer = document.createElement("div");
 responseContainer.id = "response-container";
 const loadingIndicator = document.createElement("div");
 loadingIndicator.id = "loading-indicator";
 loadingIndicator.className = "loading-hidden";
-app.append(responseContainer, loadingIndicator);
-
+main.append(responseContainer, loadingIndicator);
+app.append(disclaimer); // Append the disclaimer to the app : footer
 // Handle form submission
 document
     .getElementById("prompt-form")
@@ -135,6 +159,7 @@ document
                  <div class="ai-branding">
                     <span class="ai-icon">🤖</span>
                     <h2 class="response-heading">AI Response</h2>
+                    
                 </div>
                 <h3 class="response-sub-heading">${prompt}</h3>
                   ${formatResponse(response)}
@@ -143,13 +168,6 @@ document
                     </div>
             </div>
         `;
-
-            const disclaimer = document.createElement("div");
-            disclaimer.className = "disclaimer";
-            disclaimer.innerHTML = `
-             <p><small>Note: This AI assistant may occasionally generate incorrect information. Verify important facts.</small></p>
-                `;
-            app.append(disclaimer);
 
             requestAnimationFrame(() => {
                 Prism.highlightAllUnder(responseContainer);
