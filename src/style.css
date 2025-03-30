@@ -16,7 +16,7 @@ html {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body {   
+body {
     min-height: 100vh;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -157,6 +157,87 @@ html[data-theme] {
     --inline-code-text: #ff7b72;
     --code-comment: #8b949e;
 }
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, #646cff, #af67ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+/* AI Branding */
+.ai-branding {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.ai-icon {
+    font-size: 1.5rem;
+}
+
+.question-preview {
+    background: var(--color-secondary);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--color-primary);
+  }
+  
+  .ai-footer {
+    margin-top: 1rem;
+    text-align: right;
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  
+/* Loading Animation */
+.ai-loading {
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .ai-thinking {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  
+  .loading-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .loading-dots span {
+    width: 10px;
+    height: 10px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+  }
+  
+  .loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
 
 .inline-code {
     background: var(--inline-code-bg);
@@ -310,6 +391,15 @@ button:focus-visible {
     -webkit-box-orient: vertical;
 }
 
+.disclaimer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.8em;
+    opacity: 0.7;
+    padding: 0.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
 /* Add to your style.css */
 .theme-toggle {
     position: absolute;
@@ -386,3 +476,7 @@ button:disabled {
         transform: rotate(360deg);
     }
 }
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+  }
